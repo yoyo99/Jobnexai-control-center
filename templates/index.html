@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>JobNexAI Control Center</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; background: #0b1020; color: #f5f5f5; }
+    h1 { color: #61dafb; }
+    .card { border: 1px solid #333; padding: 15px; margin-bottom: 15px; border-radius: 8px; background: #151a2b; }
+    button { padding: 8px 12px; margin-top: 8px; cursor: pointer; }
+    input { width: 100%; padding: 6px; margin-top: 6px; }
+    pre { background: #000; padding: 10px; border-radius: 6px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>JobNexAI Control Center</h1>
+
+  <div class="card">
+    <h2>Statut des services</h2>
+    <button onclick="refreshStatus()">Rafraîchir</button>
+    <pre id="status">Clique sur "Rafraîchir"</pre>
+  </div>
+
+  <div class="card">
+    <h2>Ollama — Prompt rapide</h2>
+    <input id="ollamaPrompt" placeholder="Ton prompt pour Ollama..." />
+    <button onclick="sendOllama()">Envoyer</button>
+    <pre id="ollamaResponse"></pre>
+  </div>
+
+  <script>
+    async function refreshStatus() {
+      const res = await fetch('/api/status');
+      const data = await res.json();
+      document.getElementById('status').textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function sendOllama() {
+      const prompt = document.getElementById('ollamaPrompt').value;
+      const res = await fetch('/api/ollama/generate?prompt=' + encodeURIComponent(prompt), {
+        method: 'POST'
+      });
+      const data = await res.json();
+      document.getElementById('ollamaResponse').textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
